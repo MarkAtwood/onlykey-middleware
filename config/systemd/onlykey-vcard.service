@@ -1,0 +1,44 @@
+# onlykey-vcard.service -- systemd user unit for the OnlyKey virtual smartcard daemon
+#
+# DEPENDENCY NOTE: onlykey-vcard must be running BEFORE pcscd loads the ifd-vpcd
+# reader. Configure pcscd to load ifd-vpcd by adding to /etc/reader.conf.d/:
+#
+#   FRIENDLYNAME "OnlyKey OpenPGP"
+#   DEVICENAME   /dev/null
+#   LIBPATH      /usr/lib/pcsc/drivers/ifd-vpcd.so
+#   CHANNELID    0x000088BB
+#
+#   FRIENDLYNAME "OnlyKey PIV"
+#   DEVICENAME   /dev/null
+#   LIBPATH      /usr/lib/pcsc/drivers/ifd-vpcd.so
+#   CHANNELID    0x000088BC
+#
+# Then: systemctl --user enable --now onlykey-vcard
+#       systemctl restart pcscd
+
+[Unit]
+Description=OnlyKey Virtual Smartcard Daemon
+Documentation=https://github.com/trustcrypto/onlykey-middleware
+# Wait for the graphical session so the OnlyKey device is accessible to the user.
+After=graphical-session.target
+
+[Service]
+ExecStart=%h/.local/bin/onlykey-vcard --applet both
+Restart=on-failure
+RestartSec=5s
+
+# Logging -- never write to stdout (may corrupt caller streams).
+# Journal captures stderr automatically.
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=onlykey-vcard
+
+# Security hardening
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%h/.local/share/onlykey %t/onlykey
+
+[Install]
+WantedBy=graphical-session.target

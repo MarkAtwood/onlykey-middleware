@@ -1,0 +1,45 @@
+[package]
+name = "onlykey-transport"
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "OnlyKey transport layer: HID device I/O, typed public key construction, blocking sign/decrypt/HMAC"
+keywords = ["onlykey", "hid", "pkcs11", "security-key"]
+categories = ["cryptography", "hardware-support"]
+
+[features]
+# Enable hardware integration tests that require a physical OnlyKey device.
+hardware-tests = []
+
+[dependencies]
+onlykey-hid = { path = "../onlykey-hid" }
+
+# wolfcrypt with all crypto backends needed by the transport layer.
+wolfcrypt = { workspace = true, features = [
+    "digest",      # SHA-256 for challenge derivation
+    "ed25519",     # Ed25519 public key validation
+    "ecdsa",       # ECDSA / NistP256 public key validation
+    "rsa-direct",  # RSA public key via NativeRsaKey::from_raw_public
+] }
+
+# USB HID device access. hidapi 2.x has the DeviceInfo::open() API we need.
+hidapi = "2"
+
+# Ergonomic error types via thiserror.
+thiserror = "1"
+
+# TOML config file parsing.
+toml = "0.8"
+serde = { version = "1", features = ["derive"] }
+
+# XDG base directory resolution (~/.config/onlykey/slots.toml etc.)
+dirs = "5"
+
+# Zeroize Decrypted output (SharedSecret32, RsaPlaintext) on drop so secret
+# key material does not linger in memory after C_DeriveKey / C_Decrypt.
+zeroize = { workspace = true, features = ["derive"] }
+
+[dev-dependencies]
+tempfile = "3"

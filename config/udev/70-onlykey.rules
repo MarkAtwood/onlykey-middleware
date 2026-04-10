@@ -1,0 +1,17 @@
+# udev rules for OnlyKey hardware security key.
+#
+# Installation:
+#   sudo cp 70-onlykey.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload-rules
+#   sudo udevadm trigger
+#
+# These rules grant the 'plugdev' group read/write access to OnlyKey devices
+# and add the systemd 'uaccess' tag so seat-local users get automatic access.
+
+# Standard OnlyKey (TeensyDuino / VID=16C0 PID=0486)
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="0486", \
+    GROUP="plugdev", MODE="0660", TAG+="uaccess"
+
+# OnlyKey with OpenSK firmware (VID=1D50 PID=60FC)
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="60fc", \
+    GROUP="plugdev", MODE="0660", TAG+="uaccess"

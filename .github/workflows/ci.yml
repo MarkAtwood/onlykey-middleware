@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+          targets: wasm32-unknown-unknown
+
+      - name: Install build dependencies
+        # cmake + build-essential: wolfSSL (compiled from submodule via cc crate)
+        # libhidapi-dev: hidapi crate (onlykey-transport, onlykey-pkcs11)
+        # libclang-dev: bindgen (wolfcrypt-sys FFI binding generation)
+        run: sudo apt-get install -y cmake build-essential libhidapi-dev libclang-dev
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+
+      - name: Run tests (onlykey-hid)
+        run: cargo test -p onlykey-hid
+
+      - name: Build workspace
+        # Validates all five crates compile, not just onlykey-hid.
+        run: cargo build --workspace
+
+      - name: Clippy workspace (deny warnings)
+        run: cargo clippy --workspace -- -D warnings
+
+      - name: Check no_std for wasm32
+        run: cargo check -p onlykey-hid --target wasm32-unknown-unknown
+
+  msrv:
+    name: MSRV (1.75)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install MSRV toolchain
+        uses: dtolnay/rust-toolchain@1.75
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install build dependencies
+        run: sudo apt-get install -y cmake build-essential libhidapi-dev libclang-dev
+
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-msrv-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-msrv-
+
+      - name: Build onlykey-hid (MSRV)
+        run: cargo build -p onlykey-hid
+
+      - name: Build remaining crates (MSRV)
+        # Ensures all crates compile on the declared minimum Rust version.
+        run: cargo build -p onlykey-transport -p onlykey-pkcs11 -p onlykey-vcard -p onlykey-tool
+
+      - name: Check no_std for wasm32 (MSRV)
+        run: cargo check -p onlykey-hid --target wasm32-unknown-unknown

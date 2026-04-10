@@ -1,0 +1,35 @@
+[package]
+name = "onlykey-vcard-fuzz"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[[bin]]
+name = "fuzz_apdu"
+path = "fuzz_targets/fuzz_apdu.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_ber_tlv"
+path = "fuzz_targets/fuzz_ber_tlv.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_vpcd"
+path = "fuzz_targets/fuzz_vpcd.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "fuzz_ber_tlv_roundtrip"
+path = "fuzz_targets/fuzz_ber_tlv_roundtrip.rs"
+test = false
+doc = false
+
+[dependencies]
+libfuzzer-sys = "0.4"
+onlykey-vcard = { path = ".." }

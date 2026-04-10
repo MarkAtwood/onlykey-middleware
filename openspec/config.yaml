@@ -1,0 +1,32 @@
+schema: spec-driven
+
+context: |
+  OnlyKey Middleware Suite -- open-source Rust crates bridging OnlyKey's raw USB HID
+  protocol to standard cryptographic interfaces (PKCS#11, PIV, OpenPGP Card).
+
+  Language: Rust (edition 2021). Crypto backend: wolfcrypt (at ~/wolfssl-rs/wolfcrypt)
+  exclusively -- no ring, no RustCrypto software primitives for key operations.
+
+  Crate structure:
+    onlykey-hid        (no_std + alloc)  -- wire protocol, pure serialization
+    onlykey-transport  (std)             -- hidapi device I/O, blocking ops
+    onlykey-pkcs11     (cdylib)          -- PKCS#11 2.40 / 3.2 shared library
+    onlykey-vcard      (std binary)      -- virtual smartcard daemon (vpcd + PC/SC)
+
+  License: Apache 2.0. Primary platform: Linux. macOS (.dylib) is a stretch goal.
+  No firmware changes in scope. No Windows native support (WSL2 workaround).
+  Hardware VID/PID: (0x16C0, 0x0486) classic OnlyKey; (0x1D50, 0x60FC) OnlyKey DUO.
+
+rules:
+  specs:
+    - Use SHALL/MUST for normative requirements, SHOULD/MAY for advisory ones
+    - Include concrete wire values (hex bytes, constant names) where relevant
+    - Describe externally observable interfaces and behaviors, not internal state
+  tasks:
+    - Group by source file or module being implemented
+    - Mark hardware-dependent tests with "(hardware-tests feature)" annotation
+    - List tasks in dependency order -- foundations before consumers
+  design:
+    - Explain why a decision was made, not just what it is
+    - Call out wolfcrypt API surface choices explicitly
+    - Flag unsettled questions with "<!-- OPEN: question -->" comments

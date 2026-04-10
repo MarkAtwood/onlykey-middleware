@@ -1,0 +1,25 @@
+[package]
+name = "onlykey-hid"
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "OnlyKey USB HID wire protocol: frame encoding, multi-packet chunking, challenge derivation, response parsing"
+keywords = ["onlykey", "hid", "pkcs11", "security-key"]
+categories = ["cryptography", "hardware-support", "no-std"]
+
+[lib]
+name = "onlykey_hid"
+
+# wolfcrypt wraps C code and cannot compile for wasm32-unknown-unknown.
+# The challenge derivation module is gated on this dependency.
+[dependencies]
+# Zeroize sensitive buffers (challenge hash, command payload chunks) on drop.
+zeroize = { workspace = true, features = ["alloc"] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+wolfcrypt = { workspace = true }
+
+[dev-dependencies]
+hex-literal = "0.4"

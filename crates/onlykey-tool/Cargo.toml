@@ -1,0 +1,22 @@
+[package]
+name = "onlykey-tool"
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "OnlyKey command-line tool"
+keywords = ["onlykey", "cli"]
+categories = ["command-line-utilities", "hardware-support"]
+
+[[bin]]
+name = "onlykey-tool"
+path = "src/main.rs"
+
+[dependencies]
+onlykey-transport = { path = "../onlykey-transport" }
+onlykey-hid = { path = "../onlykey-hid" }
+onlykey-vcard = { path = "../onlykey-vcard" }
+clap = { version = "4", features = ["derive", "env"] }
+thiserror = "1"
+dirs = "5"

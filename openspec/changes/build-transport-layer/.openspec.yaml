@@ -1,0 +1,10 @@
+schema: spec-driven
+created: 2026-04-08
+dependsOn:
+  - build-protocol-layer
+provides:
+  - transport-layer
+touches:
+  - transport-layer
+  - configuration
+  - cryptography-backend

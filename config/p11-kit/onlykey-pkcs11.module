@@ -1,0 +1,20 @@
+# p11-kit module configuration for OnlyKey PKCS#11 3.2 token.
+#
+# Installation:
+#   System-wide:  cp this file to /etc/pkcs11/modules/
+#   Per-user:     cp this file to ~/.config/pkcs11/modules/
+#
+# The module library must be installed separately (e.g. to
+# /usr/lib/onlykey/libonlykey_pkcs11.so or your chosen prefix).
+# Adjust 'module:' to match the installed path.
+
+module: libonlykey_pkcs11.so
+
+# Do not prevent other modules from loading if this one is absent.
+critical: no
+
+# Mark as a managed provider (p11-kit 0.23+).
+managed: yes
+
+# Human-readable description.
+x-init-reserved: OnlyKey PKCS#11 3.2 module

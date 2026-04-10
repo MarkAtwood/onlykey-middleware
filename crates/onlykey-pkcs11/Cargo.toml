@@ -1,0 +1,42 @@
+[package]
+name = "onlykey-pkcs11"
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "OnlyKey PKCS#11 3.2 module: HID sign/decrypt/ECDH with async session support"
+keywords = ["onlykey", "pkcs11", "security-key", "hid"]
+categories = ["cryptography", "hardware-support"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# Enable hardware integration tests that require a physical OnlyKey device.
+hardware-tests = []
+
+[dependencies]
+onlykey-transport = { path = "../onlykey-transport" }
+
+# wolfcrypt for software digest (compound signing mechanisms and C_Digest).
+wolfcrypt = { workspace = true, features = [
+    "digest",  # Sha256/Sha384/Sha512 for compound mechanisms and C_Digest
+] }
+
+# PKCS#11 C ABI types. 0.5.x includes CK_FUNCTION_LIST_3_2, CK_INTERFACE,
+# CK_ASYNC_DATA, CKR_PENDING, CKF_ASYNC_SESSION*.
+cryptoki-sys = "0.5"
+
+# Config file parsing.
+toml = "0.8"
+serde = { version = "1", features = ["derive"] }
+
+# XDG base directory resolution for slots.toml.
+dirs = "5"
+
+# Ergonomic error types.
+thiserror = "1"
+
+# Zeroize sensitive buffers (signing accumulators, prehash digests) on drop.
+zeroize = { workspace = true }

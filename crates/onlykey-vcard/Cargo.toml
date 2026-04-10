@@ -1,0 +1,51 @@
+[package]
+name = "onlykey-vcard"
+version = "0.1.0"
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "OnlyKey virtual smart card daemon: vpcd TCP bridge, OpenPGP Card 3.4 and PIV applets, SQLite cert store"
+keywords = ["onlykey", "smartcard", "openpgp", "piv", "pkcs11"]
+categories = ["cryptography", "hardware-support"]
+
+[[bin]]
+name = "onlykey-vcard"
+path = "src/main.rs"
+
+[lib]
+name = "onlykey_vcard"
+path = "src/lib.rs"
+
+[features]
+# Enable hardware integration tests requiring a physical OnlyKey device.
+hardware-tests = []
+
+[dependencies]
+onlykey-transport = { path = "../onlykey-transport" }
+
+# SHA-256 (cert self-signing) and SHA-1 (OpenPGP fingerprints, cfg-gated).
+wolfcrypt = { workspace = true, features = ["digest"] }
+
+# SQLite for certificate store. Bundled amalgamation avoids distro version issues.
+rusqlite = { version = "0.31", features = ["bundled"] }
+
+# CLI argument parsing.
+clap = { version = "4", features = ["derive", "env"] }
+
+# Ergonomic error types.
+thiserror = "1"
+
+# XDG base directory resolution for certs.db path.
+dirs = "5"
+
+# Zeroize ECDH shared secrets on drop.
+zeroize = { workspace = true }
+
+# SIGTERM / SIGINT handler. Lets systemd confirm the daemon received the stop
+# signal before escalating to SIGKILL; also provides a clean shutdown log message.
+# Issue OnlyKey-lubq.
+ctrlc = { version = "3", features = ["termination"] }
+
+[dev-dependencies]
+tempfile = "3"

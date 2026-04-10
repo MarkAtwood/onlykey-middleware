@@ -1,0 +1,19 @@
+[workspace]
+members = [
+    "crates/onlykey-hid",
+    "crates/onlykey-transport",
+    "crates/onlykey-pkcs11",
+    "crates/onlykey-vcard",
+    "crates/onlykey-tool",
+]
+resolver = "2"
+
+[workspace.package]
+authors = ["Mark Atwood <mark@wolfssl.com>"]
+edition = "2021"
+license = "GPL-3.0-or-later"
+rust-version = "1.75"
+
+[workspace.dependencies]
+wolfcrypt = { path = "../wolfssl-rs/wolfcrypt", features = ["digest"] }
+zeroize = "1"

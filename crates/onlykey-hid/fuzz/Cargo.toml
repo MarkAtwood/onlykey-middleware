@@ -1,0 +1,20 @@
+[package]
+name = "onlykey-hid-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+onlykey-hid = { path = ".." }
+
+[[bin]]
+name = "fuzz_hid_frame"
+path = "fuzz_targets/fuzz_hid_frame.rs"
+doc = false
+
+# Isolated workspace: keeps fuzz targets out of the parent workspace build.
+[workspace]
