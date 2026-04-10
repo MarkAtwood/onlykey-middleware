@@ -227,7 +227,7 @@ https://github.com/trustcrypto/OnlyKey-Firmware under its own license.
 
 ## License
 
-Copyright (C) 2024 OnlyKey Middleware Contributors
+Copyright (C) 2026 OnlyKey Middleware Contributors
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
